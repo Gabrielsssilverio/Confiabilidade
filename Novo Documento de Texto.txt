@@ -1,0 +1,53 @@
+# Calculo dos Jacobianos Jzx e Jxz
+    def jacobiano_composto_cholesky(self) - tuple[np.ndarray, np.ndarray]
+        
+        Jyz, Jzy = self.decomposicao_cholesky()
+        mu_eq, D_eq = self.parametros_matriciais_equivalentes()
+
+        D_eq_inv = np.linalg.inv(D_eq)
+
+        # Jacobianos
+        J_yx = Jyz @ D_eq_inv
+        J_xy = D_eq @ Jzy
+
+        return J_xy, J_yx
+    
+    def jacobiano_composto_decomposicao_ortogonal(self) - tuple[np.ndarray, np.ndarray]
+        
+        Jyz, Jzy = self.descorrelacao_autovetores()
+        mu_eq, D_eq = self.parametros_matriciais_equivalentes()
+
+        D_eq_inv = np.linalg.inv(D_eq)
+
+        # Jacobianos
+        J_yx = Jyz @ D_eq_inv
+        J_xy = D_eq @ Jzy
+
+        return J_xy, J_yx
+
+    
+    def jacobiano_nataf_zx(self, vetor_x np.ndarray) - tuple[np.ndarray, np.ndarray]
+                   
+        termos_diagonais_zx = []
+        
+        for i, va in enumerate(self.vetor_va_cust)
+            x_i = vetor_x[i]
+            
+            # Cálculo dos componentes para dZ_idX_i = f_X(x_i)  phi(z_i)
+            cdf_xi = va.CDF(x_i)
+            z_i = norm.ppf(cdf_xi)
+            phi_zi = norm.pdf(z_i)
+            pdf_xi = va.PDF(x_i)
+            
+            if phi_zi == 0 or pdf_xi == 0
+                 # Tratar casos extremos com valor pequeno
+                 derivada_zx_i = 1e-12 
+            else
+                 derivada_zx_i = pdf_xi  phi_zi
+                 
+            termos_diagonais_zx.append(derivada_zx_i)
+
+        J_ZX = np.diag(termos_diagonais_zx)
+        J_XZ = np.linalg.inv(J_ZX) 
+        
+        return J_ZX, J_XZ
